@@ -1,6 +1,7 @@
 package com.example.bdnomeidade;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 
@@ -8,7 +9,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -40,18 +45,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .setAction("Action", null).show();
             }
         });
-        DrawerLayout drawer = binding.drawerLayout;
-        NavigationView navigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
-                .setOpenableLayout(drawer)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
+        // faz referencia ao layout que estamos criando
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        //cria objeto que controla os drawers
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
+        //ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,toolbar,0,0);
+        //chama os listeners, ou gerenciadores de eventos
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
     }
+
+    //editando o que acontece quando aperta o botão botar
+    //Se o drawer estiver aberto feche o drawer
+    //caso contrário execulta o comportamento normal
+    @Override
+    public void onBackPressed(){
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if(drawer.isDrawerOpen(GravityCompat.START)){
+            drawer.closeDrawer(GravityCompat.START);
+        }else{
+            super .onBackPressed();
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -59,11 +78,47 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
+//manipular os dados da barra de ação
     @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+        if (id == R.id.action_settings){
+            return true;
+        }
+        return super .onOptionsItemSelected(item);
     }
+
+    //manipular os eventos do menu de navegação (View Navigation)
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item){
+        //criar uma transaction, ou seja um conjunto de operações com fragmentos diferentes
+        FragmentTransaction transaction  = getSupportFragmentManager().beginTransaction();
+        int id = item.getItemId();
+        if(id == R.id.nav_insert){
+            //criar um novo fragmento
+            InsertFragment fragment = new InsertFragment();
+            transaction.replace(R.id.fragmentHolder, fragment);
+        }else if(id == R.id.nav_delete){
+            //criar um novo fragmento
+            DeleteFragment fragment = new DeleteFragment();
+            transaction.replace(R.id.fragmentHolder, fragment);
+        }else if(id == R.id.nav_buscar){
+            //criar um novo fragmento
+            BuscarFragment fragment = new BuscarFragment();
+            transaction.replace(R.id.fragmentHolder, fragment);
+        }else if(id == R.id.nav_listar){
+            //criar um novo fragmento
+            ListarFragment fragment = new ListarFragment();
+            transaction.replace(R.id.fragmentHolder, fragment);
+        }
+
+        //armazena a seleção do usuario
+        transaction.addToBackStack(null);
+        transaction.commit();
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
 }
