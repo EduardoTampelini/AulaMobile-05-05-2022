@@ -19,7 +19,7 @@ public class DataManager {
     public static final String  COLUNA_IDADE = "idade";
 
     //criaro construtor da classe
-    public  DataManager(Context context){
+    public DataManager(Context context){
         //criar uma instancia da nossa helper
         NossoSQLiteOpenHelper helper = new NossoSQLiteOpenHelper(context);
         //Obtem uma base de dados editavel
@@ -28,8 +28,8 @@ public class DataManager {
     //inserindoum registro
     public void inserir (String nome, String idade){
         String query = "INSERT INTO "+ TABELA_N_I+
-                "("+COLUNA_NOME+","+COLUNA_IDADE+")"+
-                "VALUES ("+"'"+nome+"','"+idade+");";
+                " ( "+COLUNA_NOME+" , "+COLUNA_IDADE+" )"+
+                " VALUES ("+"'"+nome+"' , '"+idade+"');";
         Log.i("insert() = ",query);
         db.execSQL(query);
     }
@@ -67,9 +67,9 @@ public class DataManager {
         public void onCreate(SQLiteDatabase sqLiteDatabase){
             String queryNovaTabela = "CREATE TABLE "
                     +TABELA_N_I +"("
-                    +COLUNA_ID +"INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                    +COLUNA_NOME+"TEXT NOT NULL,"
-                    +COLUNA_IDADE+"TEXT NOT NULL);";
+                    +COLUNA_ID +" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                    +COLUNA_NOME+" TEXT NOT NULL,"
+                    +COLUNA_IDADE+" TEXT NOT NULL);";
             sqLiteDatabase.execSQL(queryNovaTabela);
         }
 
